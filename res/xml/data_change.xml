@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datas
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:breezing="http://schemas.android.com/apk/res/com.breezinghealth">
+
+    <data
+        breezing:name="food"
+        breezing:type="update"
+        breezing:version="6.0"
+        breezing:object="com.breezinghealth.transation.HeatIngestionUpdater"/>
+
+    <data
+        breezing:name="information"
+        breezing:type="insert"
+        breezing:version="4.0"
+        breezing:object=""/>
+</datas>
+
