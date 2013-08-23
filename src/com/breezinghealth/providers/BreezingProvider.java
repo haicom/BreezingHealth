@@ -7,7 +7,9 @@ import com.breezinghealth.providers.Breezing.HeatConsumption;
 import com.breezinghealth.providers.Breezing.HeatIngestion;
 import com.breezinghealth.providers.Breezing.Information;
 import com.breezinghealth.providers.Breezing.Ingestion;
+import com.breezinghealth.providers.Breezing.UnitSettings;
 import com.breezinghealth.providers.Breezing.WeightChange;
+import com.breezinghealth.providers.BreezingDatabaseHelper.Views;
 
 import android.content.ContentProvider;
 import android.content.ContentProviderOperation;
@@ -41,6 +43,7 @@ public class BreezingProvider extends  SQLiteContentProvider {
     public  static String TABLE_WEIGHT = "weight";
     public  static String TABLE_HEAT_CONSUMPTION  = "heat_consumption";
     public  static String TABLE_HEAT_INGESTION = "heat_ingestion";
+    public  static String TABLE_UNIT_SETTINGS = "unit_settings";
 
     private SQLiteOpenHelper mOpenHelper;
 
@@ -127,12 +130,24 @@ public class BreezingProvider extends  SQLiteContentProvider {
                 qb.setTables(TABLE_INFORMATION);
                 qb.appendWhere("(_id = " + url.getPathSegments().get(1) + ")");
                 break;
+            case BREEZING_BASE_INFORMATION:
+                qb.setTables(Views.BASE_INFO);
+                break;
             case BREEZING_COST:
                 qb.setTables(TABLE_COST);
                 break;
             case BREEZING_COST_ID:
                 qb.setTables(TABLE_COST);
                 qb.appendWhere("(_id = " + url.getPathSegments().get(1) + ")");
+                break;
+            case BREEZING_COST_WEEKLY:
+                qb.setTables(Views.COST_WEEKLY);
+                break;
+            case BREEZING_COST_MONTHLY:
+                qb.setTables(Views.COST_MONTHLY);
+                break;
+            case BREEZING_COST_YEARLY:
+                qb.setTables(Views.COST_YEARLY);
                 break;
             case BREEZING_INGESTION:
                 qb.setTables(TABLE_INGESTION);
@@ -141,12 +156,30 @@ public class BreezingProvider extends  SQLiteContentProvider {
                 qb.setTables(TABLE_INGESTION);
                 qb.appendWhere("(_id = " + url.getPathSegments().get(1) + ")");
                 break;
+            case BREEZING_INGESTION_WEEKLY:
+                qb.setTables(Views.INGESTION_WEEKLY);
+                break;
+            case BREEZING_INGESTION_MONTHLY:
+                qb.setTables(Views.INGESTION_MONTHLY);
+                break;
+            case BREEZING_INGESTION_YEARLY:
+                qb.setTables(Views.INGESTION_YEARLY);
+                break;
             case BREEZING_WEIGHT:
                 qb.setTables(TABLE_WEIGHT);
                 break;
             case BREEZING_WEIGHT_ID:
                 qb.setTables(TABLE_WEIGHT);
                 qb.appendWhere("(_id = " + url.getPathSegments().get(1) + ")");
+                break;
+            case BREEZING_WEIGHT_WEEKLY:
+                qb.setTables(Views.WEIGHT_WEEKLY);
+                break;
+            case BREEZING_WEIGHT_MONTHLY:
+                qb.setTables(Views.WEIGHT_MONTHLY);
+                break;
+            case BREEZING_WEIGHT_YEARLY:
+                qb.setTables(Views.WEIGHT_YEARLY);
                 break;
             case BREEZING_HEAT_CONSUMPTION:
                 qb.setTables(TABLE_HEAT_CONSUMPTION);
@@ -160,6 +193,13 @@ public class BreezingProvider extends  SQLiteContentProvider {
                 break;
             case BREEZING_HEAT_INGESTION_ID:
                 qb.setTables(TABLE_HEAT_INGESTION);
+                qb.appendWhere("(_id = " + url.getPathSegments().get(1) + ")");
+                break;
+            case BREEZING_UNIT_SETTINGS:
+                qb.setTables(TABLE_UNIT_SETTINGS);
+                break;
+            case BREEZING_UNIT_SETTINGS_ID:
+                qb.setTables(TABLE_UNIT_SETTINGS);
                 qb.appendWhere("(_id = " + url.getPathSegments().get(1) + ")");
                 break;
             default:
@@ -274,7 +314,7 @@ public class BreezingProvider extends  SQLiteContentProvider {
         long rowID = 0;
         int match = sURLMatcher.match(url);
 
-        Log.d(TAG, "Insert uri=" + url + ", match=" + match);
+        Log.d(TAG, "Insert uri = " + url + ", match = " + match);
 
 
         switch (match) {
@@ -299,6 +339,9 @@ public class BreezingProvider extends  SQLiteContentProvider {
             case BREEZING_HEAT_INGESTION:
                 rowID = mDb.insert(TABLE_HEAT_INGESTION, HeatIngestion.FOOD_TYPE, initialValues);
                 break;
+            case BREEZING_UNIT_SETTINGS:
+                rowID = mDb.insert(TABLE_UNIT_SETTINGS, UnitSettings.UNIT_TYPE, initialValues);
+                break;    
             default:
                 Log.e(TAG, "insert: invalid request: " + url);
                 return null;
@@ -463,6 +506,13 @@ public class BreezingProvider extends  SQLiteContentProvider {
                 table = TABLE_HEAT_INGESTION;
                 extraWhere = "_id=" + url.getPathSegments().get(1);
                 break;
+            case BREEZING_UNIT_SETTINGS:
+                table = TABLE_UNIT_SETTINGS;
+                break;
+            case BREEZING_UNIT_SETTINGS_ID:
+                table = TABLE_UNIT_SETTINGS;
+                extraWhere = "_id=" + url.getPathSegments().get(1);
+                break;
             default:
                 throw new UnsupportedOperationException(
                         "URI " + url + " not supported");
@@ -601,6 +651,21 @@ public class BreezingProvider extends  SQLiteContentProvider {
                 where = DatabaseUtils.concatenateWhere("_id = " + heatIngestion, where);
                 count = mDb.delete(TABLE_HEAT_INGESTION, where, whereArgs);
                 break;
+            case BREEZING_UNIT_SETTINGS:
+                count = mDb.delete(TABLE_UNIT_SETTINGS, where, whereArgs);
+                break;
+            case BREEZING_UNIT_SETTINGS_ID:
+                int settingsId;
+                try {
+                    settingsId = Integer.parseInt(url.getPathSegments().get(1));
+                } catch (Exception e) {
+                    throw new IllegalArgumentException(
+                        "Bad message id: " + url.getPathSegments().get(1));
+                }
+
+                where = DatabaseUtils.concatenateWhere("_id = " + settingsId, where);
+                count = mDb.delete(TABLE_UNIT_SETTINGS, where, whereArgs);
+                break;
             default:
                 Log.e(TAG, "query: invalid request: " + url);
         }
@@ -618,16 +683,28 @@ public class BreezingProvider extends  SQLiteContentProvider {
     private static final int BREEZING_ACCOUNT_ID = 2;
     private static final int BREEZING_INFORMATION = 3;
     private static final int BREEZING_INFORMATION_ID = 4;
-    private static final int BREEZING_COST = 5;
-    private static final int BREEZING_COST_ID = 6;
-    private static final int BREEZING_INGESTION = 7;
-    private static final int BREEZING_INGESTION_ID = 8;
-    private static final int BREEZING_WEIGHT = 9;
-    private static final int BREEZING_WEIGHT_ID = 10;
-    private static final int BREEZING_HEAT_CONSUMPTION = 11;
-    private static final int BREEZING_HEAT_CONSUMPTION_ID = 12;
-    private static final int BREEZING_HEAT_INGESTION = 13;
-    private static final int BREEZING_HEAT_INGESTION_ID = 14;
+    private static final int BREEZING_BASE_INFORMATION = 5;
+    private static final int BREEZING_COST = 6;
+    private static final int BREEZING_COST_ID = 7;
+    private static final int BREEZING_COST_WEEKLY = 8;
+    private static final int BREEZING_COST_MONTHLY = 9;
+    private static final int BREEZING_COST_YEARLY = 10;
+    private static final int BREEZING_INGESTION = 11;
+    private static final int BREEZING_INGESTION_ID = 12;
+    private static final int BREEZING_INGESTION_WEEKLY = 13;
+    private static final int BREEZING_INGESTION_MONTHLY = 14;
+    private static final int BREEZING_INGESTION_YEARLY = 15;
+    private static final int BREEZING_WEIGHT = 16;
+    private static final int BREEZING_WEIGHT_ID = 17;
+    private static final int BREEZING_WEIGHT_WEEKLY = 18;
+    private static final int BREEZING_WEIGHT_MONTHLY = 19;
+    private static final int BREEZING_WEIGHT_YEARLY = 20;   
+    private static final int BREEZING_HEAT_CONSUMPTION = 21;
+    private static final int BREEZING_HEAT_CONSUMPTION_ID = 22;
+    private static final int BREEZING_HEAT_INGESTION = 23;
+    private static final int BREEZING_HEAT_INGESTION_ID = 24;
+    private static final int BREEZING_UNIT_SETTINGS = 25;
+    private static final int BREEZING_UNIT_SETTINGS_ID = 26;
 
     private static final UriMatcher sURLMatcher =
             new UriMatcher(UriMatcher.NO_MATCH);
@@ -637,16 +714,28 @@ public class BreezingProvider extends  SQLiteContentProvider {
         sURLMatcher.addURI(Breezing.AUTHORITY, "account/#", BREEZING_ACCOUNT_ID);
         sURLMatcher.addURI(Breezing.AUTHORITY, "information", BREEZING_INFORMATION);
         sURLMatcher.addURI(Breezing.AUTHORITY, "information/#", BREEZING_INFORMATION_ID);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "base_info", BREEZING_BASE_INFORMATION);
         sURLMatcher.addURI(Breezing.AUTHORITY, "cost", BREEZING_COST);
         sURLMatcher.addURI(Breezing.AUTHORITY, "cost/#", BREEZING_COST_ID);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "cost_weekly", BREEZING_COST_WEEKLY);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "cost_monthly", BREEZING_COST_MONTHLY);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "cost_yearly", BREEZING_COST_YEARLY);
         sURLMatcher.addURI(Breezing.AUTHORITY, "ingestion", BREEZING_INGESTION);
         sURLMatcher.addURI(Breezing.AUTHORITY, "ingestion/#", BREEZING_INGESTION_ID);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "ingestion_weekly", BREEZING_INGESTION_WEEKLY);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "ingestion_monthly", BREEZING_INGESTION_MONTHLY);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "ingestion_yearly", BREEZING_INGESTION_YEARLY);
         sURLMatcher.addURI(Breezing.AUTHORITY, "weight", BREEZING_WEIGHT);
         sURLMatcher.addURI(Breezing.AUTHORITY, "weight/#", BREEZING_WEIGHT_ID);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "weight_weekly", BREEZING_WEIGHT_WEEKLY);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "weight_monthly", BREEZING_WEIGHT_MONTHLY);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "weight_yearly", BREEZING_WEIGHT_YEARLY);
         sURLMatcher.addURI(Breezing.AUTHORITY, "heat_consumption", BREEZING_HEAT_CONSUMPTION);
         sURLMatcher.addURI(Breezing.AUTHORITY, "heat_consumption/#", BREEZING_HEAT_CONSUMPTION_ID);
         sURLMatcher.addURI(Breezing.AUTHORITY, "heat_ingestion", BREEZING_HEAT_INGESTION);
         sURLMatcher.addURI(Breezing.AUTHORITY, "heat_ingestion/#", BREEZING_HEAT_INGESTION_ID);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "unit_settings", BREEZING_UNIT_SETTINGS);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "unit_settings/#", BREEZING_UNIT_SETTINGS_ID);
     }
 
 

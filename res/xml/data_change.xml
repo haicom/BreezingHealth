@@ -9,10 +9,42 @@
         breezing:version="6.0"
         breezing:object="com.breezinghealth.transation.HeatIngestionUpdater"/>
 
-    <data
-        breezing:name="information"
+  
+
+     <data
+        breezing:name="cost"
         breezing:type="insert"
+        breezing:version="2.0"
+        breezing:object="com.breezinghealth.transation.EnergyCostInserter"/>
+
+     <data
+        breezing:name="ingestion"
+        breezing:type="insert"
+        breezing:version="1.0"
+        breezing:object="com.breezinghealth.transation.IngestionInserter"/>
+
+      <data
+        breezing:name="weight"
+        breezing:type="update"
+        breezing:version="3.0"
+        breezing:object="com.breezinghealth.transation.WeightChangeUpdater"/>
+      
+       <data
+        breezing:name="settings"
+        breezing:type="insert"
+        breezing:version="2.0"
+        breezing:object="com.breezinghealth.transation.UnitSettingsInserter"/>
+       
+       <data
+        breezing:name="info"
+        breezing:type="update"
         breezing:version="4.0"
-        breezing:object=""/>
+        breezing:object="com.breezinghealth.transation.InformationUpdater"/>
+       
+       <data
+        breezing:name="account"
+        breezing:type="insert"
+        breezing:version="2.0"
+        breezing:object="com.breezinghealth.transation.AccountInserter"/>
 </datas>
 

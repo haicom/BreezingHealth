@@ -53,7 +53,6 @@ public class DataTaskService extends Service {
         mServiceHandler = new ServiceHandler(mServiceLooper);
         mDataInfo = new ArrayList<DataInfo>();
         mOps = new ArrayList<ContentProviderOperation>();
-
     }
 
     @Override
@@ -236,15 +235,18 @@ public class DataTaskService extends Service {
 
     private void insertDataToDB(String fileName, DataInfo dataInfo) {
         String reader = "";
+        InputStream inputStream = null;
+        InputStreamReader inputreader = null;
+        BufferedReader buffreader = null;
 
         if ( findFileName(fileName) ) {
             try {
-                InputStream inputStream = getResources().getAssets().open(fileName);
+                inputStream = getResources().getAssets().open(fileName);
                 Log.d(TAG, " importInfoToData inputStream = " + inputStream);
                 int lenght = inputStream.available();
                 Log.d(TAG, " importInfoToData lenght = " + lenght);
-                InputStreamReader inputreader = new InputStreamReader(inputStream);
-                BufferedReader buffreader = new BufferedReader(inputreader);
+                inputreader = new InputStreamReader(inputStream);
+                buffreader = new BufferedReader(inputreader);
                 DataRowModify dataRowModify  = getInstance(dataInfo.getObject());
                 while ( (reader = buffreader.readLine() ) != null) {
                     Log.d(TAG, " importInfoToData reader = " + reader
@@ -254,7 +256,19 @@ public class DataTaskService extends Service {
                         dataRowModify.buildOperation(rowData, mOps);
                     }
                 }
-                buffreader.close();
+
+                if (buffreader != null) {
+                    buffreader.close();
+                }
+
+                if (inputreader != null) {
+                    inputreader.close();
+                }
+
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+
             } catch (Exception e) {
                e.printStackTrace();
             }
@@ -302,14 +316,18 @@ public class DataTaskService extends Service {
 
     private void updateDataToDB(String fileName, DataInfo dataInfo) {
         String reader = "";
+        InputStream inputStream = null;
+        InputStreamReader inputreader = null;
+        BufferedReader buffreader = null;
+
         try {
             getResources().getAssets().list("");
-            InputStream inputStream = getResources().getAssets().open(fileName);
+            inputStream = getResources().getAssets().open(fileName);
             Log.d(TAG, " importInfoToData inputStream = " + inputStream);
             int lenght = inputStream.available();
             Log.d(TAG, " importInfoToData lenght = " + lenght);
-            InputStreamReader inputreader = new InputStreamReader(inputStream);
-            BufferedReader buffreader = new BufferedReader(inputreader);
+            inputreader = new InputStreamReader(inputStream);
+            buffreader = new BufferedReader(inputreader);
             DataRowModify dataRowModify  = getInstance(dataInfo.getObject());
 
             if (dataRowModify != null) {
@@ -323,7 +341,18 @@ public class DataTaskService extends Service {
                     dataRowModify.buildOperation(rowData, mOps);
                 }
             }
-            buffreader.close();
+
+            if (buffreader != null) {
+                buffreader.close();
+            }
+
+            if (inputreader != null) {
+                inputreader.close();
+            }
+
+            if (inputStream != null) {
+                inputStream.close();
+            }
         } catch (Exception e) {
            e.printStackTrace();
         }
