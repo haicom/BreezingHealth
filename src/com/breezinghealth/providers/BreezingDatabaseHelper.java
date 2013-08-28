@@ -6,6 +6,7 @@ import com.breezinghealth.providers.Breezing.HeatConsumption;
 import com.breezinghealth.providers.Breezing.HeatIngestion;
 import com.breezinghealth.providers.Breezing.Information;
 import com.breezinghealth.providers.Breezing.Ingestion;
+import com.breezinghealth.providers.Breezing.IngestiveRecord;
 import com.breezinghealth.providers.Breezing.UnitSettings;
 import com.breezinghealth.providers.Breezing.WeightChange;
 
@@ -60,6 +61,7 @@ public class BreezingDatabaseHelper extends SQLiteOpenHelper {
         createWeightChangeTables(db);
         createHeatConsumptionTables(db);
         createHeatIngestionTables(db);
+        createIngestiveRecordTables(db);
         createEnergyCostViews(db);
         createIngestionViews(db);
         createWeightChangeViews(db);
@@ -92,7 +94,10 @@ public class BreezingDatabaseHelper extends SQLiteOpenHelper {
               +   Information.GENDER +  " INTEGER NOT NULL , "
               +   Information.HEIGHT +  " FLOAT NOT NULL , "
               +   Information.BIRTHDAY + " INTEGER NOT NULL , "
-              +   Information.CUSTOM + " INTEGER NOT NULL  " +
+              +   Information.CUSTOM + " INTEGER NOT NULL , "
+              +   Information.HEIGHT_UNIT + " TEXT NOT NULL , "
+              +   Information.WEIGHT_UNIT + " TEXT NOT NULL , "
+              +   Information.DISTANCE_UNIT + " TEXT NOT NULL  " +
                    ");");
     }
 
@@ -312,11 +317,25 @@ public class BreezingDatabaseHelper extends SQLiteOpenHelper {
                    +  HeatIngestion.FOOD_NAME + " TEXT NOT NULL , "
                    +  HeatIngestion.NAME_EXPRESS + " TEXT NOT NULL , "
                    +  HeatIngestion.PRIORITY + " INTEGER , "
-                   +  HeatIngestion.FOOD_SIZE + " INTEGER NOT NULL , "
+                   +  HeatIngestion.FOOD_QUANTITY + " INTEGER NOT NULL , "
                    +  HeatIngestion.CALORIE + " INTEGER NOT NULL " +
                    ");");
-        
-        
+    }
+
+    /***
+     * 我的每天，每餐的摄入详情
+     * @param db
+     */
+    private void createIngestiveRecordTables(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + BreezingProvider.TABLE_INGESTIVE_RECORD  + " ("
+                   +  IngestiveRecord._ID + " INTEGER PRIMARY KEY , "
+                   +  IngestiveRecord.FOOD_NAME + " TEXT NOT NULL , "
+                   +  IngestiveRecord.NAME_EXPRESS + " TEXT NOT NULL , "
+                   +  IngestiveRecord.FOOD_QUANTITY + " INTEGER NOT NULL , "
+                   +  IngestiveRecord.CALORIE + " INTEGER NOT NULL , "
+                   +  IngestiveRecord.DINING + " TEXT NOT NULL , "
+                   +  IngestiveRecord.DATE + " INTEGER NOT NULL  " +
+                   ");");
     }
 
     /***

@@ -46,5 +46,12 @@
         breezing:type="insert"
         breezing:version="2.0"
         breezing:object="com.breezinghealth.transation.AccountInserter"/>
+       
+       <data
+        breezing:name="record"
+        breezing:type="insert"
+        breezing:version="1.0"
+        breezing:object="com.breezinghealth.transation.AccountInserter"/>
+
 </datas>
 

@@ -24,7 +24,7 @@ public class Breezing {
         public static final String ACCOUNT_NAME = "account_name";
         public static final String ACCOUNT_ID   = "account_id";
         public static final String ACCOUNT_PASSWORD = "account_password";
-        
+
         public static final String INFO_ACCOUNT_ID = BreezingProvider.TABLE_ACCOUNT + "." + ACCOUNT_ID;
         public static final String INFO_ACCOUNT_NAME = BreezingProvider.TABLE_ACCOUNT + "." + ACCOUNT_NAME;
         public static final String INFO_ACCOUNT_PASSWORD = BreezingProvider.TABLE_ACCOUNT + "." + ACCOUNT_PASSWORD;
@@ -49,13 +49,13 @@ public class Breezing {
          */
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(AUTHORITY_URI, "information");
-        
+
         /**
          * The content:// style URL for this table
          */
         public static final Uri CONTENT_BASE_INFO_URI =
                 Uri.withAppendedPath(AUTHORITY_URI, "base_info");
-        
+
         public static final String ACCOUNT_ID   = "account_id";
         public static final String GENDER   = "gender";
         public static final String HEIGHT   = "height";
@@ -63,7 +63,10 @@ public class Breezing {
         public static final String BIRTHDAY   = "birthday";
         public static final String CUSTOM   = "custom";
         public static final String EXPECTED_WEIGHT   = "expected_weight";
-        
+        public static final String HEIGHT_UNIT = "height_unit";
+        public static final String WEIGHT_UNIT = "weight_unit";
+        public static final String DISTANCE_UNIT = "distance_unit";
+
         public static final String INFO_GENDER = BreezingProvider.TABLE_INFORMATION + "." + GENDER;
         public static final String INFO_HEIGHT = BreezingProvider.TABLE_INFORMATION + "." + HEIGHT;
         public static final String INFO_BIRTHDAY = BreezingProvider.TABLE_INFORMATION + "." + BIRTHDAY;
@@ -161,7 +164,7 @@ public class Breezing {
         public static final String TOTAL_INGESTION   = "total_ingestion";
         public static final String AVG_TOTAL_INGESTION = "avg_total_ingestion";
         public static final String ALL_TOTAL_INGESTION = "all_total_ingestion";
-        
+
         /**
          * The default sort order for this table
          */
@@ -201,11 +204,11 @@ public class Breezing {
         public static final String EXPECTED_WEIGHT   = "expected_weight";
         public static final String AVG_WEIGHT = "avg_weight";
         public static final String AVG_EXPECTED_WEIGHT = "avg_expected_weight";
-        
+
         public static final String INFO_WEIGHT = BreezingProvider.TABLE_WEIGHT + "." + WEIGHT;
         public static final String INFO_EXPECTED_WEIGHT = BreezingProvider.TABLE_WEIGHT + "." + EXPECTED_WEIGHT;
         public static final String INFO_DATE = BreezingProvider.TABLE_WEIGHT + "." + DATE;
-        
+
         /**
          * The default sort order for this table
          */
@@ -265,7 +268,7 @@ public class Breezing {
         public static final String FOOD_NAME   = "food_name";
         public static final String NAME_EXPRESS   = "name_express";
         public static final String PRIORITY   = "priority";
-        public static final String FOOD_SIZE   = "food_size";
+        public static final String FOOD_QUANTITY   = "food_quantity";
         public static final String CALORIE   = "calorie";
         /**
          * The default sort order for this table
@@ -284,7 +287,37 @@ public class Breezing {
          */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/heat_ingestion";
     }
-    
+
+    public static final class IngestiveRecord implements BaseColumns {
+        /**
+         * The content:// style URL for this table
+         */
+        public static final Uri CONTENT_URI =
+                Uri.withAppendedPath(AUTHORITY_URI, "ingestive_record");
+        public static final String FOOD_NAME   = "food_name";
+        public static final String NAME_EXPRESS   = "name_express";
+        public static final String FOOD_QUANTITY   = "food_quantity";
+        public static final String CALORIE   = "calorie";
+        public static final String DINING   = "dining";
+        public static final String DATE   = "date";
+        /**
+         * The default sort order for this table
+         */
+        public static final String DEFAULT_SORT_ORDER = "date DESC";
+
+        /**
+         * The MIME type of {@link #CONTENT_URI} providing a directory of
+         * people.
+         */
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/ingestive_record";
+
+        /**
+         * The MIME type of a {@link #CONTENT_URI} subdirectory of a single
+         * person.
+         */
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/ingestive_record";
+    }
+
     public static final class UnitSettings implements BaseColumns {
         /**
          * The content:// style URL for this table

@@ -7,6 +7,7 @@ import com.breezinghealth.providers.Breezing.HeatConsumption;
 import com.breezinghealth.providers.Breezing.HeatIngestion;
 import com.breezinghealth.providers.Breezing.Information;
 import com.breezinghealth.providers.Breezing.Ingestion;
+import com.breezinghealth.providers.Breezing.IngestiveRecord;
 import com.breezinghealth.providers.Breezing.UnitSettings;
 import com.breezinghealth.providers.Breezing.WeightChange;
 import com.breezinghealth.providers.BreezingDatabaseHelper.Views;
@@ -43,6 +44,7 @@ public class BreezingProvider extends  SQLiteContentProvider {
     public  static String TABLE_WEIGHT = "weight";
     public  static String TABLE_HEAT_CONSUMPTION  = "heat_consumption";
     public  static String TABLE_HEAT_INGESTION = "heat_ingestion";
+    public  static String TABLE_INGESTIVE_RECORD = "ingestive_record";
     public  static String TABLE_UNIT_SETTINGS = "unit_settings";
 
     private SQLiteOpenHelper mOpenHelper;
@@ -81,6 +83,10 @@ public class BreezingProvider extends  SQLiteContentProvider {
                 return HeatIngestion.CONTENT_TYPE;
             case BREEZING_HEAT_INGESTION_ID:
                 return HeatIngestion.CONTENT_ITEM_TYPE;
+            case BREEZING_INGESTIVE_RECORD:
+                return IngestiveRecord.CONTENT_TYPE;
+            case BREEZING_INGESTIVE_RECORD_ID:
+                return IngestiveRecord.CONTENT_ITEM_TYPE;
             default:
                 return null;
         }
@@ -193,6 +199,13 @@ public class BreezingProvider extends  SQLiteContentProvider {
                 break;
             case BREEZING_HEAT_INGESTION_ID:
                 qb.setTables(TABLE_HEAT_INGESTION);
+                qb.appendWhere("(_id = " + url.getPathSegments().get(1) + ")");
+                break;
+            case BREEZING_INGESTIVE_RECORD:
+                qb.setTables(TABLE_INGESTIVE_RECORD);
+                break;
+            case BREEZING_INGESTIVE_RECORD_ID:
+                qb.setTables(TABLE_INGESTIVE_RECORD);
                 qb.appendWhere("(_id = " + url.getPathSegments().get(1) + ")");
                 break;
             case BREEZING_UNIT_SETTINGS:
@@ -339,6 +352,9 @@ public class BreezingProvider extends  SQLiteContentProvider {
             case BREEZING_HEAT_INGESTION:
                 rowID = mDb.insert(TABLE_HEAT_INGESTION, HeatIngestion.FOOD_TYPE, initialValues);
                 break;
+            case BREEZING_INGESTIVE_RECORD:
+                rowID = insertIngestiveRecordTable(initialValues);
+                break;
             case BREEZING_UNIT_SETTINGS:
                 rowID = mDb.insert(TABLE_UNIT_SETTINGS, UnitSettings.UNIT_TYPE, initialValues);
                 break;    
@@ -448,6 +464,22 @@ public class BreezingProvider extends  SQLiteContentProvider {
         return mDb.insert(TABLE_HEAT_CONSUMPTION, HeatConsumption.SPORT_TYPE, values);
     }
 
+    private long insertIngestiveRecordTable(ContentValues initialValues) {
+        boolean addDate = false;
+        ContentValues values = new ContentValues(initialValues);
+
+        if (!initialValues.containsKey(IngestiveRecord.DATE)) {
+            addDate = true;
+        }
+
+        if (addDate) {
+            int date = simpleDateFormat("yyyyMMdd");
+            values.put(IngestiveRecord.DATE, date);
+        }
+
+        return mDb.insert(TABLE_INGESTIVE_RECORD, IngestiveRecord.FOOD_NAME, values);
+    }
+
     @Override
     protected int updateInTransaction(Uri url, ContentValues values, String where,
                 String[] whereArgs) {
@@ -504,6 +536,13 @@ public class BreezingProvider extends  SQLiteContentProvider {
                 break;
             case BREEZING_HEAT_INGESTION_ID:
                 table = TABLE_HEAT_INGESTION;
+                extraWhere = "_id=" + url.getPathSegments().get(1);
+                break;
+            case BREEZING_INGESTIVE_RECORD:
+                table = TABLE_INGESTIVE_RECORD;
+                break;
+            case BREEZING_INGESTIVE_RECORD_ID:
+                table = TABLE_INGESTIVE_RECORD;
                 extraWhere = "_id=" + url.getPathSegments().get(1);
                 break;
             case BREEZING_UNIT_SETTINGS:
@@ -651,6 +690,21 @@ public class BreezingProvider extends  SQLiteContentProvider {
                 where = DatabaseUtils.concatenateWhere("_id = " + heatIngestion, where);
                 count = mDb.delete(TABLE_HEAT_INGESTION, where, whereArgs);
                 break;
+            case BREEZING_INGESTIVE_RECORD:
+                count = mDb.delete(TABLE_INGESTIVE_RECORD, where, whereArgs);
+                break;
+            case BREEZING_INGESTIVE_RECORD_ID:
+                int ingestiveRecord;
+                try {
+                    ingestiveRecord = Integer.parseInt(url.getPathSegments().get(1));
+                } catch (Exception e) {
+                    throw new IllegalArgumentException(
+                        "Bad message id: " + url.getPathSegments().get(1));
+                }
+
+                where = DatabaseUtils.concatenateWhere("_id = " + ingestiveRecord, where);
+                count = mDb.delete(TABLE_INGESTIVE_RECORD, where, whereArgs);
+                break;
             case BREEZING_UNIT_SETTINGS:
                 count = mDb.delete(TABLE_UNIT_SETTINGS, where, whereArgs);
                 break;
@@ -703,8 +757,10 @@ public class BreezingProvider extends  SQLiteContentProvider {
     private static final int BREEZING_HEAT_CONSUMPTION_ID = 22;
     private static final int BREEZING_HEAT_INGESTION = 23;
     private static final int BREEZING_HEAT_INGESTION_ID = 24;
-    private static final int BREEZING_UNIT_SETTINGS = 25;
-    private static final int BREEZING_UNIT_SETTINGS_ID = 26;
+    private static final int BREEZING_INGESTIVE_RECORD = 25;
+    private static final int BREEZING_INGESTIVE_RECORD_ID = 26;
+    private static final int BREEZING_UNIT_SETTINGS = 27;
+    private static final int BREEZING_UNIT_SETTINGS_ID = 28;
 
     private static final UriMatcher sURLMatcher =
             new UriMatcher(UriMatcher.NO_MATCH);
@@ -734,6 +790,8 @@ public class BreezingProvider extends  SQLiteContentProvider {
         sURLMatcher.addURI(Breezing.AUTHORITY, "heat_consumption/#", BREEZING_HEAT_CONSUMPTION_ID);
         sURLMatcher.addURI(Breezing.AUTHORITY, "heat_ingestion", BREEZING_HEAT_INGESTION);
         sURLMatcher.addURI(Breezing.AUTHORITY, "heat_ingestion/#", BREEZING_HEAT_INGESTION_ID);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "ingestive_record", BREEZING_INGESTIVE_RECORD);
+        sURLMatcher.addURI(Breezing.AUTHORITY, "ingestive_record/#", BREEZING_INGESTIVE_RECORD_ID);
         sURLMatcher.addURI(Breezing.AUTHORITY, "unit_settings", BREEZING_UNIT_SETTINGS);
         sURLMatcher.addURI(Breezing.AUTHORITY, "unit_settings/#", BREEZING_UNIT_SETTINGS_ID);
     }
